@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+message AppDownloadInfo {
+    // app id
+    int32 app_id = 1;
+    // unix时间戳
+    int32 timestamp = 2;
+    // 下载来源
+    int32 source = 3;
+    // 下载次数
+    int32 num = 4;
+}

@@ -1,0 +1,47 @@
+.SUFFIXES: .c .o .lo
+
+COMPILE = $(CC) $(CFLAGS)
+INC_PATH = -I../include
+SRC_PATH = ./
+LIB_PATH = $(LIBS)
+
+TARGET_LIB = $(TARGET_PREFIX)/$(LIB_VERSION)
+
+SRC_FILES = $(wildcard $(SRC_PATH)/*.c)
+FAST_SHARED_OBJS = $(patsubst %.c, %.lo, $(SRC_FILES))
+FAST_STATIC_OBJS = $(patsubst %.c, %.lo,$(SRC_FILES))
+HEADER_FILES = $(wildcard ../include/*.h) 
+ALL_OBJS = $(FAST_STATIC_OBJS) $(FAST_SHARED_OBJS)
+
+ALL_PRGS = 
+SHARED_LIBS = libfastcommon.so
+STATIC_LIBS = libfastcommon.a
+ALL_LIBS = $(SHARED_LIBS) $(STATIC_LIBS)
+OUT_LIB_PATH = ../lib/
+
+all: $(ALL_OBJS) $(ALL_PRGS) $(ALL_LIBS)
+libfastcommon.so: $(FAST_SHARED_OBJS)
+	$(COMPILE) -o $@ -shared $(FAST_SHARED_OBJS) $(LIB_PATH)
+	mv $@ $(OUT_LIB_PATH)
+libfastcommon.a: $(FAST_STATIC_OBJS)
+	ar rcs $@ $(FAST_STATIC_OBJS)
+	mv $@ $(OUT_LIB_PATH)
+.o:
+	$(COMPILE) -o $@ $<  $(FAST_STATIC_OBJS) $(LIB_PATH) $(INC_PATH)
+.c:
+	$(COMPILE) -o $@ $<  $(FAST_STATIC_OBJS) $(LIB_PATH) $(INC_PATH)
+.c.o:
+	$(COMPILE) -c -o $@ $<  $(INC_PATH)
+.c.lo:
+	$(COMPILE) -c -fPIC -o $@ $<  $(INC_PATH)
+install:
+	mkdir -p $(TARGET_LIB)
+	mkdir -p $(TARGET_PREFIX)/lib
+	mkdir -p $(TARGET_PREFIX)/include/fastcommon
+
+	install -m 755 $(SHARED_LIBS) $(TARGET_LIB)
+	install -m 644 $(HEADER_FILES) $(TARGET_PREFIX)/include/fastcommon
+	if [ ! -e $(TARGET_PREFIX)/lib/libfastcommon.so ]; then ln -s $(TARGET_LIB)/libfastcommon.so $(TARGET_PREFIX)/lib/libfastcommon.so; fi
+clean:
+	rm -f $(ALL_OBJS) $(ALL_PRGS) $(ALL_LIBS)
+

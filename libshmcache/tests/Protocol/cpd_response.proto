@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package tutorial;
+
+option java_package = "com.bbkmobile.iqoo.bspread.sender.entity.toutiao";
+option java_outer_classname = "ToutiaoMultipleProtoResponse";
+
+message ResponseValue{
+    int32 ii=1;
+    repeated int32 cts=2;
+    repeated int32 cvs=3;
+}
+
+message TouTiaoMultipleResponse{
+    int32 code=1;
+    repeated ResponseValue value=2;
+    string version=3;
+}
+
+option optimize_for = LITE_RUNTIME;
